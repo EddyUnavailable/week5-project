@@ -3,7 +3,6 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="stylesheet" type="image/x-icon" href="styles.css" />
-    />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Fun Fact Generator</title>
     <script type="module" src="./main.js" defer></script>
@@ -15,57 +14,63 @@
       <nav>
         <button id="menu-toggle">☰</button>
         <ul id="nav-menu">
-          <li><a href="#" class="nav-link active" data-section="home">Home</a></li>
-          <li><a href="#" class="nav-link" data-section="favorites">Favorites</a></li>
-          <li><a href="#" class="nav-link" data-section="submit">Submit Fact</a></li>
+          <li>
+            <a href="#" class="nav-link active" data-section="home">Home</a>
+          </li>
+          <li>
+            <a href="#" class="nav-link" data-section="favorites">Favorites</a>
+          </li>
+          <li>
+            <a href="#" class="nav-link" data-section="submit">Submit Fact</a>
+          </li>
         </ul>
       </nav>
     </header>
 
     <main>
-
       <section id="home" class="active-section">
+        <h2>Random Facts</h2>
 
         <div id="random-fact">
           <p id="fact-text">Loading fun fact...</p>
         </div>
 
         <div class="action-buttons">
-          <button id="like-btn">❤️ Like</button>
-          <button id="next-btn">🔁 Next Fact</button>
           <select id="category">
             <option value="all">All Categories</option>
             <option value="science">Science</option>
             <option value="history">History</option>
           </select>
         </div>
-
       </section>
 
       <section id="favorites">
         <h2>Your Favorites</h2>
-        <ul id="favorites-list">
-        </ul>
+        <ul id="favorites-list"></ul>
       </section>
 
       <section id="submit">
         <h2>Submit a Fact</h2>
+
         <form id="submit-form">
-          <textarea id="fact-input" placeholder="Enter your fun fact..." required></textarea>
+          <textarea
+            id="fact-input"
+            placeholder="Enter your fun fact..."
+            required
+          ></textarea>
+
           <select id="fact-category">
             <option value="science">Science</option>
             <option value="history">History</option>
           </select>
+
           <button type="submit">Submit</button>
         </form>
       </section>
     </main>
 
-      
-
-      <footer>
-        <p>&copy; 2025 Fun Fact Generator</p>
-      </footer>
-    </header>
+    <footer>
+      <p>&copy; 2025 Fun Fact Generator</p>
+    </footer>
   </body>
 </html>
