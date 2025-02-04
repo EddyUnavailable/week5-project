@@ -1,55 +1,108 @@
-import express from "express"
-import cors from "cors"
-import pg from "pg"
-import dotenv from "dotenv"
+import express from "express";
+import cors from "cors";
+import pg from "pg";
+import dotenv from "dotenv";
+import fetch from "node-fetch";
 
-// instastiate my app 
-const app = express()
+dotenv.config();
 
-// do my 'use'
-// allow incomming requests from other people 
-app.use(cors())
-// read incomming json
-app.use(express.json())
+const app = express();
+app.use(cors());
+app.use(express.json());
 
-// goes and looks for a .env file and pulls those environment variables into our node process
-dotenv.config()
-
-// a pool is a way for our express app to connect to our database
-// I'll give it a connnection string so that I can connect to *my* database
+// database connection
 const db = new pg.Pool({
     connectionString: process.env.DB_CONN
-})
+});
 
-const form = document.getElementById('form')
-const displayElem = document.getElementById('holdUi')
+// API Ninja config
+const API_NINJA_KEY = process.env.API_NINJA_KEY;
+const API_NINJA_URL = 'https://api.api-ninjas.com/v1/facts';
 
-form.addEventListener('submit', function(event) {
-    // stops our browser refreshing when submitted
-    event.preventDefault()
-    const result = new FormData(form)
-    // turning my FormData object into a normal object
-    const searchTerm = Object.fromEntries(result)
-    console.log(searchTerm.query)
-    fetchWordDef(searchTerm.query)
-})
+// GET random fact from API Ninja
+app.get('/api/random-fact', async (req, res) => {
+    try {
+        const response = await fetch(API_NINJA_URL, {
+            headers: {
+                'X-Api-Key': API_NINJA_KEY
+            }
+        });
+        const data = await response.json();
+        res.json(data[0]);
+    } catch (error) {
+        console.error('Error fetching from API Ninja:', error);
+        res.status(500).json({ error: 'Failed to fetch random fact' });
+    }
+});
 
+// GET facts from database with optional category filter
+app.get('/api/facts', async (req, res) => {
+    const { category } = req.query;
+    try {
+        let query = 'SELECT * FROM facts';
+        const params = [];
 
-async function fetchWordDef(word) {
-    // get my response object
-    // fetch comes with JS
-    const response = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`)
-    // parse the response.body as JSON
-    const data = await response.json()
-    generateUI(data[0])
-}   
+        if (category && category !== 'all') {
+            query += ' WHERE category = $1';
+            params.push(category);
+        }
 
+        const result = await db.query(query, params);
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Database error:', error);
+        res.status(500).json({ error: 'Failed to fetch facts' });
+    }
+});
 
+// POST new fact to database
+app.post('/api/facts', async (req, res) => {
+    const { fact, category } = req.body;
+    
+    if (!fact || !category) {
+        return res.status(400).json({ error: 'Fact and category are required' });
+    }
 
-function generateUI(data) {
-    // reset the p tag to have no content. 
-    displayElem.innerHTML = ''
-    console.log(data.meanings[0].definitions[0].definition)
+    try {
+        const query = 'INSERT INTO facts (fact, category) VALUES ($1, $2) RETURNING *';
+        const result = await db.query(query, [fact, category]);
+        res.status(201).json(result.rows[0]);
+    } catch (error) {
+        console.error('Database error:', error);
+        res.status(500).json({ error: 'Failed to save fact' });
+    }
+});
 
-    displayElem.innerText = data.meanings[0].definitions[0].definition
-}
+// GET user's favorite facts
+app.get('/api/favorites', async (req, res) => {
+    try {
+        const result = await db.query('SELECT * FROM facts WHERE is_favorite = true');
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Database error:', error);
+        res.status(500).json({ error: 'Failed to fetch favorites' });
+    }
+});
+
+// POST toggle favorite status
+app.post('/api/favorites/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        const query = 'UPDATE facts SET is_favorite = NOT is_favorite WHERE id = $1 RETURNING *';
+        const result = await db.query(query, [id]);
+        
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'Fact not found' });
+        }
+        
+        res.json(result.rows[0]);
+    } catch (error) {
+        console.error('Database error:', error);
+        res.status(500).json({ error: 'Failed to update favorite status' });
+    }
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
