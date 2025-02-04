@@ -1,7 +1,25 @@
-import express from "express";
-import cors from "cors";
-const app = express();
-app.use(cors());
+import express from "express"
+import cors from "cors"
+import pg from "pg"
+import dotenv from "dotenv"
+
+// instastiate my app 
+const app = express()
+
+// do my 'use'
+// allow incomming requests from other people 
+app.use(cors())
+// read incomming json
+app.use(express.json())
+
+// goes and looks for a .env file and pulls those environment variables into our node process
+dotenv.config()
+
+// a pool is a way for our express app to connect to our database
+// I'll give it a connnection string so that I can connect to *my* database
+const db = new pg.Pool({
+    connectionString: process.env.DB_CONN
+})
 
 const form = document.getElementById('form')
 const displayElem = document.getElementById('holdUi')
