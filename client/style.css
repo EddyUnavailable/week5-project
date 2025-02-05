@@ -1,5 +1,5 @@
 body {
-  font-family:Verdana, Geneva, Tahoma, sans-serif
+  font-family:Verdana, Geneva, Tahoma, sans-serif;
   background-color: #eaeded;
   color: #333;
   margin: 0;
@@ -17,10 +17,14 @@ h2 {
 }
 
 header {
-  background: #1c5253;
+  background:linear-gradient(
+    #1c5253,
+    #36898c
+    );
+  
   color: white;
   padding: 20px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px rgba(223, 203, 203, 0.1);
 }
 
 nav {
@@ -46,12 +50,26 @@ nav ul li a {
   font-weight: bold;
   padding: 10px 20px;
   border-radius: 5px;
-  transition: background 0.5s ease;
 }
 
 nav ul li a:hover {
-  background: #2a7f7a;
+  background: linear-gradient( -45deg,
+  #2a7f7a 40%,  
+  #47b7ac 50%,
+  #2a7f7a 80%);
+  background-size: 500%;
+  background-position-x: 100%;
+  animation: shimmer 1s infinite linear;
 }
+
+
+@keyframes shimmer {
+  to {
+      background-position-x: 0%
+  }
+ }  
+
+
 
 main {
   padding: 15px;
@@ -86,13 +104,17 @@ button {
   border-radius: 5px;
   font-size: 16px;
   cursor: pointer;
-  transition: background 0.3s ease;
   flex: 1;
   margin: 5px;
 }
 
 button:hover {
-  background: #2a7f7a;
+  background: linear-gradient( to right,
+  #2a7f7a 40%,  
+  #308980 50%,
+  #99207b 60%,
+  #308980 70%,
+  #2a7f7a 80%);
 }
 
 #category {
@@ -154,7 +176,10 @@ select {
 footer {
   text-align: center;
   padding: 10px;
-  background: #1c5253;
   color: white;
   margin-top: 20px;
+  background:linear-gradient( to top,
+  #1c5253,
+  #36898c
+  );
 }
