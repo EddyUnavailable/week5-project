@@ -27,7 +27,7 @@ const db = new pg.Pool({
     }
 });
 
-// API Ninja config
+// API Ninja 
 const API_NINJA_KEY = process.env.API_NINJA_KEY;
 const API_NINJA_URL = 'https://api.api-ninjas.com/v1/facts';
 
@@ -35,27 +35,26 @@ const API_NINJA_URL = 'https://api.api-ninjas.com/v1/facts';
 app.get('/api/random-fact', async (req, res) => {
     const { category } = req.query;
     try {
-        let apiUrl = API_NINJA_URL;
+        let query = 'SELECT * FROM facts';
+        const params = [];
+
         if (category && category !== 'all') {
-            apiUrl += `?category=${category}`;
+            query += ' WHERE category = $1';
+            params.push(category);
         }
         
-        const response = await fetch(apiUrl, {
-            headers: {
-                'X-Api-Key': API_NINJA_KEY
-            }
-        });
-        const data = await response.json();
+        query += ' ORDER BY RANDOM() LIMIT 1';
         
-        // Add category to the response if not present
-        const fact = data[0];
-        if (fact && !fact.category) {
-            fact.category = category || 'general';
+        const result = await db.query(query, params);
+        
+        if (result.rows.length === 0) {
+            // If no fact found in database, fetch from API
+            // Your existing API Ninja code here
         }
         
-        res.json(fact);
+        res.json(result.rows[0]);
     } catch (error) {
-        console.error('Error fetching from API Ninja:', error);
+        console.error('Error fetching random fact:', error);
         res.status(500).json({ error: 'Failed to fetch random fact' });
     }
 });
@@ -84,13 +83,13 @@ app.get('/api/facts', async (req, res) => {
 app.post('/api/facts', async (req, res) => {
     const { text, category } = req.body;
     
-    if (!text || !category) {
-        return res.status(400).json({ error: 'Text and category are required' });
+    if (!text) {
+        return res.status(400).json({ error: 'Text is required' });
     }
 
     try {
         const query = 'INSERT INTO facts (text, category) VALUES ($1, $2) RETURNING *';
-        const result = await db.query(query, [text, category]);
+        const result = await db.query(query, [text, category || 'general']);
         res.status(201).json(result.rows[0]);
     } catch (error) {
         console.error('Database error:', error);
