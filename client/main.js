@@ -10,6 +10,14 @@ const API_URL = ""; // Update with correct URL
 //load favs from local storage
 let favourites = loadFavourites();
 
+//get facts
+async function getFacts() {
+  const res = await fetch("https://week5-project-1-8dsr.onrender.com/")
+  const facts = await res.json()
+  console.log(facts)
+  displayFacts(facts);
+}
+
 // Fetch and display facts
 async function fetchFacts(category = "all") {
   try {
