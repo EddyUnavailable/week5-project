@@ -5,7 +5,7 @@ const categoryInput = document.getElementById("fact-category");
 const categoryFilter = document.getElementById("category");
 const favouritesList = document.getElementById("favorites-list");
 
-const API_URL = ""; // Update with correct URL
+const API_URL = "https://api.api-ninjas.com/v1/facts"; 
 
 //load favs from local storage
 let favourites = loadFavourites();

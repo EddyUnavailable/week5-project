@@ -17,7 +17,6 @@ insert into facts (fact, result) values
 SELECT * From facts;
 
 SELECT FACT FROM facts;
-
 SELECT result, id FROM facts;
 
 SELECT facts FROM facts WHERE id = 1
