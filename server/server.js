@@ -21,14 +21,27 @@ const API_NINJA_URL = 'https://api.api-ninjas.com/v1/facts';
 
 // GET random fact from API Ninja
 app.get('/api/random-fact', async (req, res) => {
+    const { category } = req.query;
     try {
-        const response = await fetch(API_NINJA_URL, {
+        let apiUrl = API_NINJA_URL;
+        if (category && category !== 'all') {
+            apiUrl += `?category=${category}`;
+        }
+        
+        const response = await fetch(apiUrl, {
             headers: {
-                'X-Api-Key': API_NINJA_KEY
+                'X-Api-Key': '2T7IOODo5/N1fYmpXx4E5Q==6IEmBDviYleGrXzV'
             }
         });
         const data = await response.json();
-        res.json(data[0]);
+        
+        // category to the response if not present
+        const fact = data[0];
+        if (fact && !fact.category) {
+            fact.category = category || 'general';
+        }
+        
+        res.json(fact);
     } catch (error) {
         console.error('Error fetching from API Ninja:', error);
         res.status(500).json({ error: 'Failed to fetch random fact' });
@@ -105,4 +118,36 @@ app.post('/api/favorites/:id', async (req, res) => {
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
+});
+
+app.post('/api/facts/share', async (req, res) => {
+    const { factId, platform } = req.body;
+    
+    try {
+       // verify the fact exists
+        const factQuery = await db.query('SELECT * FROM facts WHERE id = $1', [factId]);
+        if (factQuery.rows.length === 0) {
+            return res.status(404).json({ error: 'Fact not found' });
+        }
+        
+        const fact = factQuery.rows[0];
+        
+        // genertate sharing URL based on platform
+        let shareUrl;
+        switch(platform) {
+            case 'twitter':
+                shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(fact.text)}`;
+                break;
+            case 'facebook':
+                shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(process.env.APP_URL)}&quote=${encodeURIComponent(fact.text)}`;
+                break;
+            default:
+                return res.status(400).json({ error: 'Unsupported platform' });
+        }
+        
+        res.json({ shareUrl });
+    } catch (error) {
+        console.error('Error generating share link:', error);
+        res.status(500).json({ error: 'Failed to generate share link' });
+    }
 });
