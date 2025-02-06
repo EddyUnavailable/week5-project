@@ -51,7 +51,7 @@ async function fetchFacts(category = "all") {
 
 async function fetchUserSubmitedFacts() {
   try {
-    const res = await fetch(DB_CONN);
+    const res = await fetch("http://localhost:3000/api/facts");
     const facts = await res.json();
 
     factList.innerHTML = "";
@@ -70,14 +70,14 @@ async function fetchUserSubmitedFacts() {
 // Handle form submission for adding a new fact
 factForm.addEventListener("submit", async (event) => {
   event.preventDefault();
-  const text = factInput.value;
-  const category = categoryInput.value;
+  const formData = new FormData(factForm)
+  const data = Object.fromEntries(formData)
 
   try {
-    const response = await fetch("http://localhost:5174/", {
+    const response = await fetch("http://localhost:3000/api/facts", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text, category }),
+      body: JSON.stringify(data),
     });
 
     if (response.ok) {
