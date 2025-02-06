@@ -61,18 +61,19 @@ app.get("/api/random-fact", async (req, res) => {
 
 // GET facts from database with optional category filter
 app.get("/api/facts", async (req, res) => {
-  const { category } = req.query;
+  //const { category } = req.query;
   try {
-    let query = "SELECT * FROM facts";
-    const params = [];
+    const data = await db.query("SELECT * FROM facts");
+    res.json(data.rows);
+    //const params = [];
 
-    if (category && category !== "all") {
-      query += " WHERE category = $1";
-      params.push(category);
-    }
+    // //if (category && category !== "all") {
+    //   query += " WHERE category = $1";
+    //   params.push(category);
+    // }
 
-    const result = await db.query(query, params);
-    res.json(result.rows);
+    // const result = await db.query(query, params);
+    // res.json(result.rows);
   } catch (error) {
     console.error("Database error:", error);
     res.status(500).json({ error: "Failed to fetch facts" });
@@ -81,16 +82,18 @@ app.get("/api/facts", async (req, res) => {
 
 // POST new fact to database
 app.post("/api/facts", async (req, res) => {
-  const { text, category } = req.body;
+  const { fact, result } = req.body;
 
-  if (!text) {
-    return res.status(400).json({ error: "Text is required" });
-  }
+  //if (!text) {
+  //  return res.status(400).json({ error: "Text is required" });
+  //}
 
   try {
-    const query =
-      "INSERT INTO facts (text, category) VALUES ($1, $2) RETURNING *";
-    const result = await db.query(query, [text, category || "general"]);
+    await db.query("INSERT INTO facts (fact, result) VALUES ($1, $2)", [
+      fact,
+      result,
+    ]);
+    //const result = await db.query(query, [text, category || "general"]);
     res.status(201).json(result.rows[0]);
   } catch (error) {
     console.error("Database error:", error);
