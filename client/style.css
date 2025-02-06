@@ -1,5 +1,5 @@
 body {
-  font-family:Verdana, Geneva, Tahoma, sans-serif;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
   background-color: #eaeded;
   color: #333;
   margin: 0;
@@ -17,11 +17,8 @@ h2 {
 }
 
 header {
-  background:linear-gradient(
-    #1c5253,
-    #36898c
-    );
-  
+  background: linear-gradient(#1c5253, #36898c);
+
   color: white;
   padding: 20px;
   box-shadow: 0 4px 6px rgba(223, 203, 203, 0.1);
@@ -53,30 +50,24 @@ nav ul li a {
 }
 
 nav ul li a:hover {
-  background: linear-gradient( -45deg,
-  #2a7f7a 40%,  
-  #47b7ac 50%,
-  #2a7f7a 80%);
+  background: linear-gradient(-45deg, #2a7f7a 40%, #47b7ac 50%, #2a7f7a 80%);
   background-size: 500%;
   background-position-x: 100%;
   animation: shimmer 1s infinite linear;
 }
 
-
 @keyframes shimmer {
   to {
-      background-position-x: 0%
+    background-position-x: 0%;
   }
- }  
-
-
+}
 
 main {
   padding: 15px;
 }
 
 section {
-  display: none;
+  display: block;
   padding: 20px;
   background: white;
   border-radius: 8px;
@@ -85,7 +76,8 @@ section {
 }
 
 .active-section {
-  display: block;
+  background-color: #f0f0f0;
+  border: 2px solid #1c5253;
 }
 
 .action-buttons {
@@ -109,12 +101,14 @@ button {
 }
 
 button:hover {
-  background: linear-gradient( to right,
-  #2a7f7a 40%,  
-  #308980 50%,
-  #99207b 60%,
-  #308980 70%,
-  #2a7f7a 80%);
+  background: linear-gradient(
+    to right,
+    #2a7f7a 40%,
+    #308980 50%,
+    #99207b 60%,
+    #308980 70%,
+    #2a7f7a 80%
+  );
 }
 
 #category {
@@ -178,8 +172,5 @@ footer {
   padding: 10px;
   color: white;
   margin-top: 20px;
-  background:linear-gradient( to top,
-  #1c5253,
-  #36898c
-  );
+  background: linear-gradient(to top, #1c5253, #36898c);
 }
