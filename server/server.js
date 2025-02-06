@@ -4,7 +4,7 @@ import pg from "pg";
 import dotenv from "dotenv";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
-import fetch from "node-fetch";
+// import fetch from "node-fetch";
 
 //  current file path and directory
 const __filename = fileURLToPath(import.meta.url);
@@ -12,7 +12,7 @@ const __dirname = dirname(__filename);
 
 // dotenv
 dotenv.config({ path: join(__dirname, ".env") });
-
+  console.log(process.env.DB_CONN)
 const app = express();
 
 //  CORS
@@ -64,7 +64,7 @@ app.get("/api/facts", async (req, res) => {
   //const { category } = req.query;
   try {
     const data = await db.query("SELECT * FROM facts");
-    res.json(data.rows);
+     res.json(data.rows);
     //const params = [];
 
     // //if (category && category !== "all") {
@@ -82,6 +82,7 @@ app.get("/api/facts", async (req, res) => {
 
 // POST new fact to database
 app.post("/api/facts", async (req, res) => {
+  console.log(req.body)
   const { fact, result } = req.body;
 
   //if (!text) {
@@ -94,7 +95,7 @@ app.post("/api/facts", async (req, res) => {
       result,
     ]);
     //const result = await db.query(query, [text, category || "general"]);
-    res.status(201).json(result.rows[0]);
+    res.status(201).json("Saved fact");
   } catch (error) {
     console.error("Database error:", error);
     res.status(500).json({ error: "Failed to save fact" });
