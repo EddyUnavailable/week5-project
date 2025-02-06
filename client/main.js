@@ -4,7 +4,7 @@ const factInput = document.getElementById("fact-input");
 const categoryInput = document.getElementById("fact-category");
 const categoryFilter = document.getElementById("category");
 const favouritesList = document.getElementById("favorites-list");
-
+const factText = document.getElementById('fact-text')
 const API_URL = "https://api.api-ninjas.com/v1/facts"; 
 
 //load favs from local storage
@@ -12,34 +12,44 @@ let favourites = loadFavourites();
 
 // Fetch and display facts
 async function fetchFacts(category = "all") {
+  const fetchURL = category === "all" ? API_URL : `${API_URL}?category=${category}`
   try {
-    const res = await fetch(
-      category === "all" ? API_URL : `${API_URL}?category=${category}`
-    );
-    const facts = await res.json();
-    factList.innerHTML = ""; // Clear the current list
+    const res = await fetch(fetchURL, {headers: {'X-Api-Key': ''}});
+    const fact= await res.json();
 
-    facts.forEach((fact) => {
-      const factItem = document.createElement("div");
-      factItem.classList.add("fact-item");
-      factItem.innerHTML = `
-        <p class="fact-text">${fact.text}</p>
-        <p class="fact-category">Category: ${fact.category}</p>
-        <button class="like-btn" data-id="${fact.id}">❤️ Like</button>
-      `;
 
-      factList.appendChild(factItem);
+    factText.innerText = fact[0].fact
+    // factList.innerHTML = ""; // Clear the current list
 
-      // Add event listener to the "Like" button
-      factItem
-        .querySelector(".like-btn")
-        .addEventListener("click", () => addToFavourites(fact));
-    });
+    // facts.forEach((fact) => {
+    //   const factItem = document.createElement("div");
+    //   factItem.classList.add("fact-item");
+    //   factItem.innerHTML = `
+    //     <p class="fact-text">${fact.text}</p>
+    //     <p class="fact-category">Category: ${fact.category}</p>
+    //     <button class="like-btn" data-id="${fact.id}">❤️ Like</button>
+    //   `;
+
+    //   factList.appendChild(factItem);
+
+      // // Add event listener to the "Like" button
+      // factItem
+      //   .querySelector(".like-btn")
+      //   .addEventListener("click", () => addToFavourites(fact));
+    // });
   } catch (error) {
     console.error("Error fetching facts:", error);
   }
 }
 
+
+function fetchUserSubmitedFacts() {
+  // fetch from DATABASE instead of from 3rdParty API
+  // make a seperate section in the landing page for 'user submited facts'
+  // your POST/SUBMIT FORM will post to your database. 
+  // DONT 'take' the data from the third party api. 
+
+}
 // Handle form submission for adding a new fact
 factForm.addEventListener("submit", async (event) => {
   event.preventDefault();
@@ -47,7 +57,7 @@ factForm.addEventListener("submit", async (event) => {
   const category = categoryInput.value;
 
   try {
-    const response = await fetch(API_URL, {
+    const response = await fetch('http://localhost:3000/api/facts', {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ text, category }),
