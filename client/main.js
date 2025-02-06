@@ -44,12 +44,29 @@ async function fetchFacts(category = "all") {
   }
 }
 
-function fetchUserSubmitedFacts() {
-  // fetch from DATABASE instead of from 3rdParty API
-  // make a seperate section in the landing page for 'user submited facts'
-  // your POST/SUBMIT FORM will post to your database.
-  // DONT 'take' the data from the third party api.
+// fetch from DATABASE instead of from 3rdParty API
+// make a seperate section in the landing page for 'user submited facts'
+// your POST/SUBMIT FORM will post to your database.
+// DONT 'take' the data from the third party api.
+
+async function fetchUserSubmitedFacts() {
+  try {
+    const res = await fetch(DB_CONN);
+    const facts = await res.json();
+
+    factList.innerHTML = "";
+
+    // Add each fact to the list
+    facts.forEach((fact) => {
+      const li = document.createElement("li");
+      li.innerHTML = `<p class="fav-fact">${fact.fact}</p>`;
+      factList.appendChild(li); // Append to factList
+    });
+  } catch (error) {
+    console.error("Error fetching user-submitted facts:", error);
+  }
 }
+
 // Handle form submission for adding a new fact
 factForm.addEventListener("submit", async (event) => {
   event.preventDefault();
@@ -57,7 +74,7 @@ factForm.addEventListener("submit", async (event) => {
   const category = categoryInput.value;
 
   try {
-    const response = await fetch("http://localhost:3000/api/facts", {
+    const response = await fetch("http://localhost:5174/", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ text, category }),
